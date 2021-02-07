@@ -76,8 +76,7 @@ class BugMinerReproducer(Reproducer):
 
 
 def clone_repo(base, url):
-    repo_url = url.geturl().replace('\\', '/').replace('////', '//')
-    git.Git(base).clone(repo_url)
+    git.Git(base).clone(url)
 
 
 if __name__ == "__main__":
