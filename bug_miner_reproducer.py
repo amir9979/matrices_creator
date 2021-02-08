@@ -78,6 +78,7 @@ class BugMinerReproducer(Reproducer):
 def clone_repo(base, url):
     git.Repo.clone_from(url, base)
 
+
 if __name__ == "__main__":
     import settings
     git_url, jira_url = settings.projects.get(sys.argv[1])
