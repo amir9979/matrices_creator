@@ -11,6 +11,7 @@ from subprocess import Popen
 import tempfile
 from ast import literal_eval
 import pandas as pd
+import codecs
 
 
 class BugMinerReproducer(Reproducer):
@@ -21,8 +22,7 @@ class BugMinerReproducer(Reproducer):
         super(BugMinerReproducer, self).__init__(id, map(lambda t: t.replace("#", "."), failing_tests), dir_id)
         self.repo_path = repo_url
         self.parent = id
-        self.diffs = list(map(lambda x: x.encode('utf-8'), diffs))
-        list(map(literal_eval, self.diffs))
+        self.diffs = list(filter(literal_eval, map(lambda x: x.encode('utf-8'), diffs)))
         self.blamed_components = reduce(list.__add__, map(lambda x: x.split("@"), blamed_components), [])
         self.fix_commit = fix
 
@@ -38,7 +38,7 @@ class BugMinerReproducer(Reproducer):
             if literal_eval(diff):
                 f, path_to_diff = tempfile.mkstemp()
                 os.close(f)
-                with open(path_to_diff, "w") as f:
+                with codecs.open(path_to_diff, "w", "utf-8") as f:
                     f.write(literal_eval(diff) + "\n")
                     f.flush()
                 repo = git.Repo(self.dir_id.clones)
@@ -82,5 +82,9 @@ if __name__ == "__main__":
     import settings
     git_url, jira_url = settings.projects.get(sys.argv[1])
     projects = BugMinerReproducer.read_bug_miner_csv(sys.argv[1], git_url)
-    for p in projects:
-        projects[p].dump()
+    keys = sorted(list(projects.keys()))
+    if len(sys.argv) > 2:
+        projects[keys[int(sys.argv[2])]].dump()
+    else:
+        for p in projects:
+            projects[p].dump()
