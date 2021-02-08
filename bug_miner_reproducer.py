@@ -83,7 +83,7 @@ if __name__ == "__main__":
     git_url, jira_url = settings.projects.get(sys.argv[1])
     projects = BugMinerReproducer.read_bug_miner_csv(sys.argv[1], git_url)
     keys = sorted(list(projects.keys()))
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 2 and int(sys.argv[2]) < len(keys):
         projects[keys[int(sys.argv[2])]].dump()
     else:
         for p in projects:
