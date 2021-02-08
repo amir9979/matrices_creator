@@ -76,12 +76,12 @@ jobs:
     - name: execute
       run: python bug_miner_reproducer.py ${{github.event.issue.title}}
 
-    - name: Upload results
+    - name: Upload matrices
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
-        name: results
-        path: results
+        name: matrices
+        path: results\${{github.event.issue.title}}\matrices
 
     - name: Close Issue
       continue-on-error: true
