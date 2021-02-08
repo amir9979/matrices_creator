@@ -86,6 +86,6 @@ if __name__ == "__main__":
     keys = sorted(list(projects.keys()))
     if len(sys.argv) > 2 and int(sys.argv[2]) < len(keys):
         projects[keys[int(sys.argv[2])]].dump()
-    else:
-        for p in projects:
-            projects[p].dump()
+    # else:
+    #     for p in projects:
+    #         projects[p].dump()
