@@ -21,7 +21,8 @@ class BugMinerReproducer(Reproducer):
         super(BugMinerReproducer, self).__init__(id, map(lambda t: t.replace("#", "."), failing_tests), dir_id)
         self.repo_path = repo_url
         self.parent = id
-        self.diffs = diffs
+        self.diffs = list(map(lambda x: x.encode('utf-8'), diffs))
+        list(map(literal_eval, self.diffs))
         self.blamed_components = reduce(list.__add__, map(lambda x: x.split("@"), blamed_components), [])
         self.fix_commit = fix
 
