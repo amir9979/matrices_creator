@@ -16,11 +16,10 @@ import pandas as pd
 class BugMinerReproducer(Reproducer):
     BUG_MINER_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), r"bug_miner"))
     RESULTS_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), r"results"))
-    BUG_MINER_REPOS_DIR = os.path.realpath(r"repos")
 
-    def __init__(self, id, failing_tests, dir_id, repo_path, diffs, blamed_components, fix):
+    def __init__(self, id, failing_tests, dir_id, repo_url, diffs, blamed_components, fix):
         super(BugMinerReproducer, self).__init__(id, map(lambda t: t.replace("#", "."), failing_tests), dir_id)
-        self.repo_path = repo_path
+        self.repo_path = repo_url
         self.parent = id
         self.diffs = diffs
         self.blamed_components = reduce(list.__add__, map(lambda x: x.split("@"), blamed_components), [])
@@ -59,7 +58,7 @@ class BugMinerReproducer(Reproducer):
     #     git.Repo(self.get_dir_id().clones).git.checkout('--', '.')
 
     @staticmethod
-    def read_bug_miner_csv(project_name):
+    def read_bug_miner_csv(project_name, git_url):
         csv_path = os.path.join(BugMinerReproducer.BUG_MINER_DIR, project_name + ".csv")
         df = pd.read_csv(csv_path)
         ans = dict()
@@ -68,7 +67,7 @@ class BugMinerReproducer(Reproducer):
         for bug_data in commits:
             ans[bug_data] = BugMinerReproducer(bug_data, list(set(map(lambda x: x['testcase'], commits[bug_data]))),
                                                DirId(DirStructure(BugMinerReproducer.RESULTS_DIR), bug_data),
-                                               os.path.join(BugMinerReproducer.BUG_MINER_REPOS_DIR, project_name),
+                                               git_url,
                                                list(set(map(lambda x: x['diff'], commits[bug_data]))),
                                                list(set(map(lambda x: x['blamed_components'], commits[bug_data]))),
                                                list(set(map(lambda x: x['commit'], commits[bug_data]))))
@@ -81,7 +80,6 @@ def clone_repo(base, url):
 if __name__ == "__main__":
     import settings
     git_url, jira_url = settings.projects.get(sys.argv[1])
-    clone_repo(BugMinerReproducer.BUG_MINER_REPOS_DIR, git_url)
-    projects = BugMinerReproducer.read_bug_miner_csv(sys.argv[1])
+    projects = BugMinerReproducer.read_bug_miner_csv(sys.argv[1], git_url)
     for p in projects:
         projects[p].dump()
