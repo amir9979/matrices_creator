@@ -88,7 +88,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: matrices_${{matrix.commit_ind}}
-        path: results #\${{github.event.issue.title}}\matrices
+        path: results\matrices
 
     - name: Close Issue
       continue-on-error: true
