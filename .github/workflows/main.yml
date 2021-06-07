@@ -77,6 +77,7 @@ jobs:
         pip install pandas
         pip install pyswarm
         pip install networkx
+        pip install lizard
     - name: javadiff_install
       run: python ./javadiff/setup.py install
 
